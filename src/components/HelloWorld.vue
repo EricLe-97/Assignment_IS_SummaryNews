@@ -1,10 +1,16 @@
 <template>
   <div class ="link-input">
     <input class ="input-holder" v-on:keyup="test" placeholder="Type your link for me to process . . . . ." v-model="link">
-    <button type="button" v-on:click="send_link"  > K-mean process </button>
+    <button type="button" v-on:click="send_link"  > K-mean and Knn process </button>
     <modal name="kmean">
       <h1> K-mean model process </h1>
-      {{this.kmean}}</modal>
+      {{this.kmean}}
+      </modal>
+    <modal name= "knn">
+      <h1> Knn model process </h1>
+      {{this.knn}}
+    </modal>
+      
   </div>
   <!-- <div class="hello">
     <h1>{{ msg }}</h1>
@@ -48,6 +54,7 @@ export default {
     return{
       link:'',
       kmean:'',
+      knn:'',
     }
   },
   // mounted(){
@@ -57,16 +64,17 @@ export default {
   //   }
   // },
   methods:{
-    test  (e)  {
+    async test  (e)  {
       if (e.keyCode === 13) {
         this.log += e.key;
-        axios.post('http://127.0.0.1:5000/api',{
+        await axios.post('http://127.0.0.1:5000/api',{
           url:this.link
         })
         .then((res)=>{
           this.kmean = res.data.kmean;
-          this.$modal.show('kmean')
-          console.log(this.$modal);
+          this.knn = res.data.knn;
+          this.$modal.show('kmean');
+          this.$modal.show('knn');
         })
         .catch((err)=>console.log(err));
       }
@@ -75,15 +83,20 @@ export default {
       // }      
       
     },
-    send_link(){
-      axios.post('http://127.0.0.1:5000/api',{
+    async send_link(){
+      await axios.post('http://127.0.0.1:5000/api',{
           url:this.link
         })
         .then((res)=>{
           this.kmean = res.data.kmean;
-          this.$modal.show('kmean')
+          this.knn = res.data.knn;
+          this.$modal.show('kmean');
+          this.$modal.show('knn');
         })
         .catch((err)=>console.log(err));
+    },
+    kmeanclose(event){
+      console.log('notatkia',event);
     }
   },
   

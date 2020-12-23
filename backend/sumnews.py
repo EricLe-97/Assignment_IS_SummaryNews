@@ -17,27 +17,56 @@ from preProcessData import *
 from sklearn.cluster import KMeans
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.metrics import pairwise_distances_argmin_min
+import multiprocessing
+from sklearn.model_selection import train_test_split
+
+
 def makesentences(rawtext):
+    models = []
+    models.append([Word2Vec.load('word2vec_Education.model'),0])
+    models.append([Word2Vec.load('word2vec_Technology.model'),1])
+    models.append([Word2Vec.load('word2vec_Sport.model'),2])
+
+    models.append([Word2Vec.load('word2vec_Covid19.model'),3])
+    models.append([Word2Vec.load('word2vec_Politic.model'),4])
+    # models.append([Word2Vec.load('word2vec_Entertainment.model'),5])
+    # models.append([Word2Vec.load('word2vec_Film.model'),6])
+    models.append([Word2Vec.load('word2vec_Law.model'),5])
+    models.append([Word2Vec.load('word2vec_Economy.model'),6])
+    X = []
+    Y = []
+    new_values = []
+    # tsne_model = TSNE(perplexity=40, n_components=2, init='pca', n_iter=250, random_state=5)
+    for model in models:
+        for word in model[0].wv.vocab:
+            X.append(model[0][word])
+            Y.append(model[1])
+    X_train, X_test, y_train, y_test = train_test_split(X, Y, test_size=0.15)
+  
+# new_values = tsne_model.fit_transform(tokens)
+    # sdasdasd
+    cores = multiprocessing.cpu_count()
+    knn = KNeighborsClassifier(n_neighbors = 5, p = 2,weights="distance") 
+    knn.fit(X_train, y_train)
     sentences = nltk.sent_tokenize(rawtext)
     tokenizer = CrfTokenizer()
     stopWordLst = stopWordsLst()
     data = []
-    with HiddenPrints():
-        for sentence in sentences:
-            documents = preprocess_text([sentence], tokenizer=tokenizer) # Tách từ và clean
-            if len(documents) == 0:
-                continue
-            sents = removeStopWord(documents,stopWordLst)
-            data.append(sents)
-        # model = Word2Vec(data, size=100, window=20, min_count=2, workers=4, sg=0)
-        model = Word2Vec(data,min_count=2,
-                            window=5,
-                            size=150,
-                            sample=6e-5, 
-                            alpha=0.03, 
-                            min_alpha=0.0007,
-                            negative=20,
-                            workers=cores-1)
+    for sentence in sentences:
+        documents = preprocess_text([sentence], tokenizer=tokenizer) # Tách từ và clean
+        if len(documents) == 0:
+            continue
+        sents = removeStopWord(documents,stopWordLst)
+        data.append(sents)
+    # model = Word2Vec(data, size=100, window=20, min_count=2, workers=4, sg=0)
+    model = Word2Vec(data,min_count=2,
+                        window=5,
+                        size=150,
+                        sample=6e-5, 
+                        alpha=0.03, 
+                        min_alpha=0.0007,
+                        negative=20,
+                        workers=cores-1)
     os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
     data_covid = []
     data_edu = []
@@ -78,7 +107,7 @@ def makesentences(rawtext):
         'law': len(data_law),
         'economy': len(data_economy)
     }
-    return ("The news belong to category:{}".format(max(out.items(), key=operator.itemgetter(1))[0]))
+    return model,data_covid,("The news belong to category:{}".format(max(out.items(), key=operator.itemgetter(1))[0]))
 
 def kmean_model(sentences):
     sentences = nltk.sent_tokenize(sentences)
@@ -105,11 +134,11 @@ def kmean_model(sentences):
     ordering = sorted(range(n_clusters), key=lambda k: avg[k])
     summary = ' '.join([sentences[closest[idx]] for idx in ordering])
     return summary
-def knn_model(sentences,model,data_test):
+def knn_model(sentences):
+    model,vocab,belongto = makesentences(sentences)
     sentences = nltk.sent_tokenize(sentences)
-
-    model=model
-    vocab = data_test
+    # model=model
+    # vocab = data_test
     model1 = Word2Vec.load('word2vec_Covid19.model')
     vocal1 = model1.wv.vocab
     X = []
