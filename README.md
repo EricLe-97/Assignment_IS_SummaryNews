@@ -1,4 +1,6 @@
-# sumnews
+# Summary News
+
+Using KNN and Kmean to summary news.
 
 ## Project setup
 ```
