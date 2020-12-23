@@ -17,11 +17,11 @@ class receiveurl(Resource):
     @cross_origin()
     def post(self):
         res = json.loads(request.data.decode('utf-8'))
-
+        data = self.crawl(res['url'])
         # print(res['request'],type(res))
         process = {}
-        # process['knn'] = knn_model(self.crawl(res['url']))
-        process['kmean'] = kmean_model(self.crawl(res['url']))
+        process['knn'] = knn_model(data)
+        process['kmean'] = kmean_model(data)
         return jsonify(process)
     @cross_origin()
     def options(self):
