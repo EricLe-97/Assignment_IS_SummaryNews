@@ -1,5 +1,12 @@
 <template>
-  <div class="hello">
+  <div class ="link-input">
+    <input class ="input-holder" v-on:keyup="test" placeholder="Type your link for me to process . . . . ." v-model="link">
+    <button type="button" v-on:click="send_link"  > K-mean process </button>
+    <modal name="kmean">
+      <h1> K-mean model process </h1>
+      {{this.kmean}}</modal>
+  </div>
+  <!-- <div class="hello">
     <h1>{{ msg }}</h1>
     <p>
       For a guide and recipes on how to configure / customize this project,<br>
@@ -27,32 +34,89 @@
       <li><a href="https://vue-loader.vuejs.org" target="_blank" rel="noopener">vue-loader</a></li>
       <li><a href="https://github.com/vuejs/awesome-vue" target="_blank" rel="noopener">awesome-vue</a></li>
     </ul>
-  </div>
+  </div> -->
 </template>
 
 <script>
+import Vue from 'vue'
+import VModal from 'vue-js-modal'
+Vue.use(VModal,{})
+import axios from 'axios'
 export default {
   name: 'HelloWorld',
-  props: {
-    msg: String
-  }
+  data(){
+    return{
+      link:'',
+      kmean:'',
+    }
+  },
+  // mounted(){
+  //   if (this.link){
+  //     this.$modal.show('example')
+      
+  //   }
+  // },
+  methods:{
+    test  (e)  {
+      if (e.keyCode === 13) {
+        this.log += e.key;
+        axios.post('http://127.0.0.1:5000/api',{
+          url:this.link
+        })
+        .then((res)=>{
+          this.kmean = res.data.kmean;
+          this.$modal.show('kmean')
+          console.log(this.$modal);
+        })
+        .catch((err)=>console.log(err));
+      }
+      // } else if (e.keyCode === 50) {
+      //   alert('@ was pressed');
+      // }      
+      
+    },
+    send_link(){
+      axios.post('http://127.0.0.1:5000/api',{
+          url:this.link
+        })
+        .then((res)=>{
+          this.kmean = res.data.kmean;
+          this.$modal.show('kmean')
+        })
+        .catch((err)=>console.log(err));
+    }
+  },
+  
 }
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-h3 {
-  margin: 40px 0 0;
+.link-input{
+  display:flex;
+  box-sizing: border-box;
+  width:100%;
+  height: 100px;
+  border: 2px solid black;
 }
-ul {
-  list-style-type: none;
-  padding: 0;
+input {
+  display: block;
+  margin-left: auto;
+  margin-right:auto;
+  width:80%;
+  height:30%;
+  
+  padding: 4px 12px;
+  color: rgba(0,0,0,.70);
+  border: 1px solid rgba(0,0,0,.12);
+  transition: 1s all linear;
+  background: white;
+
 }
-li {
-  display: inline-block;
-  margin: 0 10px;
-}
-a {
-  color: #42b983;
+button{
+  height:40%;
+  width: 10%;
+  float:right;
+
 }
 </style>

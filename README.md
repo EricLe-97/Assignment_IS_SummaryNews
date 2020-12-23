@@ -9,6 +9,23 @@ yarn install
 ```
 yarn serve
 ```
+or 
+
+```
+npm run serve
+```
+### Backend server run
+
+```
+cd backend
+```
+```
+pip install -r requirement.txt
+```
+```
+python3 crawler.py
+```
+
 
 ### Compiles and minifies for production
 ```
