@@ -1,2 +1,0 @@
-pyvi
-deepai_nlp
