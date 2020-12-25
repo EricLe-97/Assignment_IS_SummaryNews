@@ -1,9 +1,7 @@
 # Summary News
 
-Using KNN and Kmean to summary news.
-``
-[Demo website](https://newsummaryfe.herokuapp.com/).
-``
+Using KNN and Kmean to summary news.[Demo website](https://newsummaryfe.herokuapp.com/).
+
 ## Project setup
 ```
 yarn install
