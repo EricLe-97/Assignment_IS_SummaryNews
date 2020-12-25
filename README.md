@@ -2,7 +2,7 @@
 
 Using KNN and Kmean to summary news.
 ``
-https://newsummaryfe.herokuapp.com/
+[Demo website](https://newsummaryfe.herokuapp.com/).
 ``
 ## Project setup
 ```
